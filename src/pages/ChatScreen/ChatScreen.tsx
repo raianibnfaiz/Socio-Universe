@@ -6,12 +6,7 @@ import {
   Camera,
   Image,
   Languages,
-  Send,
   Clock,
-  SendIcon,
-  SendHorizonalIcon,
-  SendHorizonal,
-  LucideSendHorizonal,
   LucideSend,
 } from "lucide-react";
 import user1 from "../../assets/images/user1.png";
@@ -85,6 +80,7 @@ const ChatDetailScreen: React.FC = () => {
     },
   ]);
   const [uploading, setUploading] = useState(false);
+
   const [selectedTemplateItem, setSelectedTemplateItem] = useState<{
     vietnamese: string;
     japanese: string;
@@ -111,9 +107,11 @@ const ChatDetailScreen: React.FC = () => {
     tempC: [],
     tempD: [],
     tempE: [],
+    tempF: [],
   };
+  // Enable mouse drag scroll for horizontal tab bar
 
-  const templateTabs = ["tempA", "tempB", "tempC", "tempD", "tempE"];
+  const templateTabs = ["tempA", "tempB", "tempC", "tempD", "tempE", "tempF"];
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -128,7 +126,6 @@ const ChatDetailScreen: React.FC = () => {
   }) => {
     setSelectedTemplateItem(template);
     setMessage(`${template.vietnamese}\n${template.japanese}`);
-    setShowTemplates(false);
   };
 
   const handleTabSelect = (tab: string) => {
@@ -273,222 +270,222 @@ const ChatDetailScreen: React.FC = () => {
         <span className={styles.dateText}>今日</span>
       </div>
 
-      <div
-        ref={chatContainerRef}
-        className={styles.chatContainer}
-        onClick={handleChatAreaClick}
-      >
-        {chatMessages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`${styles.messageWrapper} ${
-              msg.isUser ? styles.messageWrapperUser : ""
-            }`}
-          >
+      <div className={styles.mainContent}>
+        <div
+          ref={chatContainerRef}
+          className={styles.chatContainer}
+          onClick={handleChatAreaClick}
+        >
+          {chatMessages.map((msg) => (
             <div
-              className={
-                msg.isUser
-                  ? styles.userMessageContainer
-                  : styles.otherMessageContainer
-              }
+              key={msg.id}
+              className={`${styles.messageWrapper} ${
+                msg.isUser ? styles.messageWrapperUser : ""
+              }`}
             >
-              {!msg.isUser && (
-                <div className={styles.avatar}>
-                  {msg.avatar ? (
-                    <img
-                      src={msg.avatar}
-                      alt={msg.sender}
-                      className={styles.avatarImage}
-                    />
-                  ) : (
-                    <span>👤</span>
-                  )}
-                </div>
-              )}
-
-              <div className={msg.isUser ? "" : styles.messageContent}>
+              <div
+                className={
+                  msg.isUser
+                    ? styles.userMessageContainer
+                    : styles.otherMessageContainer
+                }
+              >
                 {!msg.isUser && (
-                  <div className={styles.senderName}>{msg.sender}</div>
+                  <div className={styles.avatar}>
+                    {msg.avatar ? (
+                      <img
+                        src={msg.avatar}
+                        alt={msg.sender}
+                        className={styles.avatarImage}
+                      />
+                    ) : (
+                      <span>👤</span>
+                    )}
+                  </div>
                 )}
 
-                <div
-                  onClick={msg.isUser ? handleUserMessageClick : undefined}
-                  className={`${styles.messageBubble} ${
-                    msg.isUser ? styles.userBubble : styles.otherBubble
-                  }`}
-                >
-                  {msg.content.image ? (
-                    <img
-                      src={msg.content.image}
-                      alt="Uploaded"
-                      className={styles.messageImage}
-                    />
-                  ) : (
-                    <>
-                      {msg.content.japanese && (
-                        <div className={styles.japaneseText}>
-                          {msg.content.japanese}
-                        </div>
-                      )}
-                      {msg.content.vietnamese && (
-                        <div className={styles.vietnameseText}>
-                          {msg.content.vietnamese}
-                        </div>
-                      )}
-                    </>
+                <div className={msg.isUser ? "" : styles.messageContent}>
+                  {!msg.isUser && (
+                    <div className={styles.senderName}>{msg.sender}</div>
                   )}
-                </div>
 
-                <div
-                  className={`${styles.timeText} ${
-                    msg.isUser ? styles.timeTextRight : ""
-                  }`}
-                >
-                  {msg.time}
+                  <div className={styles.messageRow}>
+                    <div
+                      onClick={msg.isUser ? handleUserMessageClick : undefined}
+                      className={`${styles.messageBubble} ${
+                        msg.isUser ? styles.userBubble : styles.otherBubble
+                      }`}
+                    >
+                      {msg.content.image ? (
+                        <img
+                          src={msg.content.image}
+                          alt="Uploaded"
+                          className={styles.messageImage}
+                        />
+                      ) : (
+                        <>
+                          {msg.content.japanese && (
+                            <div className={styles.japaneseText}>
+                              {msg.content.japanese}
+                            </div>
+                          )}
+                          {msg.content.vietnamese && (
+                            <div className={styles.vietnameseText}>
+                              {msg.content.vietnamese}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    <div
+                      className={`${styles.timeText} ${
+                        msg.isUser ? styles.timeTextRight : styles.timeTextLeft
+                      }`}
+                    >
+                      {msg.time}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
 
-        {uploading && (
-          <div className={styles.uploadingWrapper}>
-            <div className={styles.uploadingBubble}>
-              <div className={styles.uploadingText}>Uploading...</div>
+          {uploading && (
+            <div className={styles.uploadingWrapper}>
+              <div className={styles.uploadingBubble}>
+                <div className={styles.uploadingText}>Uploading...</div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {popup.visible && (
-          <div
-            className={styles.popup}
-            style={{ top: 355, bottom: "auto", right: 190, left: "auto" }}
-          >
-            <div className={styles.popupItem}>
-              メッセージを見た人 <br /> Người xem
-            </div>
-            <div className={`${styles.popupItem} ${styles.popupItemDisabled}`}>
-              送信を取り消す <br /> Thu hồi
-            </div>
-            <div className={styles.popupItem}>
-              定型文へ追加 <br /> Thêm mẫu
-            </div>
-            <div className={`${styles.popupItem} ${styles.popupItemLast}`}>
-              復習用に登録 <br /> Lưu ôn tập
-            </div>
-          </div>
-        )}
-      </div>
-
-      {showTemplates && (
-        <div className={styles.templateContainer}>
-          <div className={styles.templateTabs}>
-            <Clock className={styles.clockIcon} />
-            <div className={styles.tabsWrapper}>
-              {templateTabs.map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => handleTabSelect(tab)}
-                  className={`${styles.tabButton} ${
-                    selectedTemplate === tab ? styles.tabButtonActive : ""
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className={styles.templateGrid}>
-            {templates[selectedTemplate]?.slice(0, 8).map((template, index) => (
-              <button
-                key={index}
-                onClick={() => handleTemplateSelect(template)}
-                className={styles.templateButton}
+          {popup.visible && (
+            <div
+              className={styles.popup}
+              style={{ top: 355, bottom: "auto", right: 190, left: "auto" }}
+            >
+              <div className={styles.popupItem}>
+                メッセージを見た人 <br /> Người xem
+              </div>
+              <div
+                className={`${styles.popupItem} ${styles.popupItemDisabled}`}
               >
-                <div className={styles.templateVietnamese}>
-                  {template.vietnamese}
+                送信を取り消す <br /> Thu hồi
+              </div>
+              <div className={styles.popupItem}>
+                定型文へ追加 <br /> Thêm mẫu
+              </div>
+              <div className={`${styles.popupItem} ${styles.popupItemLast}`}>
+                復習用に登録 <br /> Lưu ôn tập
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className={styles.inputSection}>
+          {selectedTemplateItem && (
+            <div className={styles.extensionContainer}>
+              <div className={styles.extensionText}>
+                <div className={styles.extensionVietnamese}>
+                  {selectedTemplateItem.vietnamese}
                 </div>
-                <div className={styles.templateJapanese}>
-                  {template.japanese}
-                </div>
+                {/* <div className={styles.extensionJapanese}>
+                  {selectedTemplateItem.japanese}
+                </div> */}
+              </div>
+              <button
+                className={styles.extensionCross}
+                onClick={closeExtension}
+              >
+                ×
               </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {selectedTemplateItem && (
-        <div className={styles.extensionContainer}>
-          <div className={styles.extensionText}>
-            <div className={styles.extensionVietnamese}>
-              {selectedTemplateItem.vietnamese}
             </div>
-            <div className={styles.extensionJapanese}>
-              {selectedTemplateItem.japanese}
+          )}
+
+          <div
+            className={`${styles.inputContainer} ${
+              selectedTemplateItem ? styles.inputContainerAttached : ""
+            }`}
+          >
+            <div className={styles.inputWrapper}>
+              <div className={styles.iconGroup}>
+                <Languages className={styles.inputIcon} />
+                <button
+                  onClick={handleCameraCapture}
+                  disabled={uploading}
+                  className={styles.iconButton}
+                >
+                  <Camera className={styles.inputIcon} />
+                </button>
+
+                <button
+                  onClick={handleImageUpload}
+                  className={styles.iconButton}
+                >
+                  <Image className={styles.inputIcon} />
+                </button>
+                <input className={styles.hiddenInput} />
+              </div>
+
+              <div className={styles.inputBox}>
+                <textarea
+                  className={styles.textarea}
+                  placeholder="Aa"
+                  rows={1}
+                />
+                <button
+                  onClick={() => setShowTemplates(!showTemplates)}
+                  className={styles.templateToggle}
+                >
+                  A
+                </button>
+              </div>
+
+              <button onClick={handleSendMessage} className={styles.sendButton}>
+                <LucideSend className={styles.sendIcon} />
+              </button>
             </div>
           </div>
-          <button className={styles.extensionCross} onClick={closeExtension}>
-            ×
-          </button>
-        </div>
-      )}
 
-      <div
-        className={`${styles.inputContainer} ${
-          selectedTemplateItem ? styles.inputContainerAttached : ""
-        }`}
-      >
-        <div className={styles.inputWrapper}>
-          <div className={styles.iconGroup}>
-            <Languages className={styles.inputIcon} />
-            <button
-              onClick={handleCameraCapture}
-              disabled={uploading}
-              className={styles.iconButton}
-            >
-              <Camera
-                className={
-                  uploading
-                    ? `${styles.inputIcon} ${styles.iconDisabled}`
-                    : styles.inputIcon
-                }
-              />
-            </button>
-            <input
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleFileChange}
-              className={styles.hiddenInput}
-              disabled={uploading}
-            />
-            <button onClick={handleImageUpload} className={styles.iconButton}>
-              <Image className={styles.inputIcon} />
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className={styles.hiddenInput}
-            />
-          </div>
+          {showTemplates && (
+            <div className={styles.templateContainer}>
+              <div className={styles.templateTabs}>
+                <Clock className={styles.clockIcon} />
+                <div className={styles.tabsWrapper}>
+                  {templateTabs.map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => handleTabSelect(tab)}
+                      className={`${styles.tabButton} ${
+                        selectedTemplate === tab ? styles.tabButtonActive : ""
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          <div className={styles.inputBox}>
-            <textarea className={styles.textarea} placeholder="Aa" rows={1} />
-            <button
-              onClick={() => setShowTemplates(!showTemplates)}
-              className={styles.templateToggle}
-            >
-              A
-            </button>
-          </div>
-
-          <button onClick={handleSendMessage} className={styles.sendButton}>
-            <LucideSend className={styles.sendIcon} />
-          </button>
+              <div className={styles.templateGrid}>
+                {templates[selectedTemplate]
+                  ?.slice(0, 8)
+                  .map((template, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleTemplateSelect(template)}
+                      className={styles.templateButton}
+                    >
+                      <div className={styles.templateVietnamese}>
+                        {template.vietnamese}
+                      </div>
+                      <div className={styles.templateJapanese}>
+                        {template.japanese}
+                      </div>
+                    </button>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

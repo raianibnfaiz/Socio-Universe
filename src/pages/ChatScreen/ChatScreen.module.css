@@ -1,5 +1,14 @@
 /* ChatScreen.module.css */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
 
+.inputSection {
+  flex-shrink: 0;
+}
 .container {
   display: flex;
   flex-direction: column;
@@ -61,6 +70,7 @@
   display: flex;
   justify-content: center;
   padding: 1rem 0;
+  background-color: #f7f7f7;
 }
 
 .dateText {
@@ -78,6 +88,7 @@
   position: relative;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
+  background-color: #f7f7f7;
 }
 
 .chatContainer::-webkit-scrollbar {
@@ -136,7 +147,7 @@
 
 .messageBubble {
   cursor: pointer;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.5rem;
 }
 
 .otherBubble {
@@ -155,13 +166,13 @@
 }
 
 .japaneseText {
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   color: #1f2937;
   margin-bottom: 0.25rem;
 }
 
 .vietnameseText {
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   color: #4b5563;
 }
 
@@ -173,13 +184,38 @@
 }
 
 .timeText {
-  font-size: 0.75rem;
+  font-size: 8px;
   color: #6b7280;
   margin-top: 0.25rem;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+
+.timeTextLeft {
+  align-self: flex-end;
   text-align: left;
 }
 
 .timeTextRight {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.messageRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-direction: row;
+}
+
+/* For user messages, reverse the order */
+.messageWrapperUser .messageRow {
+  flex-direction: row-reverse;
+}
+
+/* Ensure proper alignment for user messages */
+.messageWrapperUser .timeTextRight {
+  order: 1;
   text-align: right;
 }
 
@@ -233,7 +269,7 @@
 
 .templateContainer {
   background-color: white;
-  border-top: 1px solid #e5e7eb;
+  border-top: none;
   padding: 0 1rem 1rem;
 }
 
@@ -252,20 +288,26 @@
   color: #6b7280;
 }
 
+/* Make template tabs scrollable with drag & swipe */
 .tabsWrapper {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
   overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-  scroll-behavior: smooth !important;
+  padding: 8px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  user-select: none;
 }
 
 .tabsWrapper::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
-.tabsWrapper {
-  -webkit-overflow-scrolling: touch !important;
+
+.tabsWrapper.grabbing {
+  cursor: grabbing;
 }
 
 .tabButton {
@@ -325,13 +367,6 @@
   color: #4b5563;
 }
 
-.extensionContainer {
-  position: relative;
-  background-color: white;
-  border-top: 1px solid #e5e7eb;
-  padding: 0.75rem 1rem 0.5rem;
-}
-
 .extensionText {
   font-size: 0.875rem;
   line-height: 1.4;
@@ -370,21 +405,22 @@
 }
 
 .inputContainer {
-  background-color: white;
-  border-top: 1px solid #d1d5db;
+  background-color: rgb(255, 255, 255);
+
   padding: 0.5rem 0.25rem;
-  margin: 0.5rem;
 }
 
 .inputContainerAttached {
-  border-top: none;
+  border-top: 3px solid #f9fafb;
+
   margin-top: 0;
-  padding-top: 0;
+  padding-top: 15;
 }
 
 .inputWrapper {
   display: flex;
   align-items: center;
+  background-color: #ffffff;
   gap: 0.25rem;
   width: 100%;
 }
@@ -429,7 +465,9 @@
   align-items: center;
   background-color: #f3f4f6;
   border-radius: 9999px;
-  padding: 0.4rem 0.75rem;
+  padding: 0.3rem 0.5rem;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
 }
 
 .textarea {
@@ -445,7 +483,7 @@
 }
 
 .templateToggle {
-  margin-left: 0.25rem;
+  margin: 0.25rem;
   border-radius: 0.375rem;
   border: 1px solid #9ca3af;
   padding: 0.25rem 0.45rem;
@@ -481,4 +519,49 @@
   margin-right: 2px;
   color: white;
   transform: rotate(45deg);
+}
+
+/* Add to your CSS module */
+.extensionContainer {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0; /* Remove any margins */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.extensionText {
+  text-align: center;
+  flex: 1;
+}
+
+.extensionVietnamese {
+  font-size: 0.875rem;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.extensionJapanese {
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.extensionCross {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.inputContainerAttached {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
