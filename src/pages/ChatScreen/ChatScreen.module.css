@@ -189,7 +189,7 @@
 
 .timeText {
   font-size: 8px;
-  color: #6b7280;
+  color: #555555;
   margin-top: 0.25rem;
   white-space: nowrap;
   align-self: flex-end;
@@ -218,15 +218,12 @@
 }
 
 /* Ensure proper alignment for user messages */
-.messageWrapperUser .timeTextRight {
-  order: 1;
-  text-align: right;
-}
+
 .timeContainer {
+  gap: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 1px;
 }
 
 .readStatus {
@@ -235,6 +232,7 @@
   color: #555555;
   text-align: right;
   white-space: nowrap;
+  line-height: 0.5;
 }
 
 /* For non-user messages, align time container to the left */
