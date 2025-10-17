@@ -8,11 +8,19 @@ import {
   Languages,
   Clock,
   LucideSend,
+  CameraIcon,
 } from "lucide-react";
 import user1 from "../../assets/images/user1.png";
 import user2 from "../../assets/images/user2.png";
 import user4 from "../../assets/images/user4.png";
 import styles from "./ChatScreen.module.css";
+import { SendIcon } from "../../icon/sendIcon";
+import { TranslationIcon } from "../../icon/translation";
+import { CameraImageIcon } from "../../icon/cameraImageIcon";
+import { GalleryImageIcon } from "../../icon/galleryImageicon";
+import { BackIcon } from "../../icon/backIcon";
+import { MenuIcon } from "../../icon/menuIcon";
+import { EditIcon } from "../../icon/editIcon";
 
 interface Message {
   id: number;
@@ -79,7 +87,6 @@ const ChatDetailScreen: React.FC = () => {
       },
     },
   ]);
-  const [uploading, setUploading] = useState(false);
 
   const [selectedTemplateItem, setSelectedTemplateItem] = useState<{
     vietnamese: string;
@@ -119,13 +126,36 @@ const ChatDetailScreen: React.FC = () => {
         chatContainerRef.current.scrollHeight;
     }
   }, [chatMessages]);
+  useEffect(() => {
+    // Fix mobile viewport height issues
+    const setVH = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+
+    setVH();
+    window.addEventListener("resize", setVH);
+    window.addEventListener("orientationchange", setVH);
+
+    return () => {
+      window.removeEventListener("resize", setVH);
+      window.removeEventListener("orientationchange", setVH);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [chatMessages]);
 
   const handleTemplateSelect = (template: {
     vietnamese: string;
     japanese: string;
   }) => {
     setSelectedTemplateItem(template);
-    setMessage(`${template.vietnamese}\n${template.japanese}`);
+    //setMessage(`${template.vietnamese}\n${template.japanese}`);
   };
 
   const handleTabSelect = (tab: string) => {
@@ -176,40 +206,6 @@ const ChatDetailScreen: React.FC = () => {
     return `${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !file.type.startsWith("image/")) {
-      return;
-    }
-    await uploadImage(file);
-  };
-
-  const uploadImage = async (file: File) => {
-    setUploading(true);
-
-    setTimeout(() => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageUrl = e.target?.result as string;
-        const newMessage: Message = {
-          id: chatMessages.length + 1,
-          sender: "健太",
-          avatar: null,
-          time: getCurrentTime(),
-          content: {
-            image: imageUrl,
-          },
-          isUser: true,
-        };
-        setChatMessages((prev) => [...prev, newMessage]);
-        setUploading(false);
-        if (fileInputRef.current) fileInputRef.current.value = "";
-        if (cameraInputRef.current) cameraInputRef.current.value = "";
-      };
-      reader.readAsDataURL(file);
-    }, 1000);
-  };
-
   const handleSendMessage = () => {
     if (message.trim()) {
       const lines = message.split("\n");
@@ -238,12 +234,19 @@ const ChatDetailScreen: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <ChevronLeft className={styles.headerIcon} />
+        <div className={styles.iconCursor}>
+          <BackIcon />
+        </div>
+
         <div className={styles.headerTitle}>
           <span className={styles.titleText}>トークルーム名（7）</span>
-          <Edit3 className={styles.editIcon} />
+          <div className={styles.iconCursor}>
+            <EditIcon />
+          </div>
         </div>
-        <Menu className={styles.menuIcon} onClick={handleMenuClick} />
+        <div onClick={handleMenuClick} className={styles.iconCursor}>
+          <MenuIcon />
+        </div>
 
         {showMenuDropdown && (
           <div
@@ -338,26 +341,25 @@ const ChatDetailScreen: React.FC = () => {
                       )}
                     </div>
 
-                    <div
-                      className={`${styles.timeText} ${
-                        msg.isUser ? styles.timeTextRight : styles.timeTextLeft
-                      }`}
-                    >
-                      {msg.time}
+                    <div className={styles.timeContainer}>
+                      {msg.avatar === null && (
+                        <div className={styles.readStatus}>既読 6</div>
+                      )}
+                      <div
+                        className={`${styles.timeText} ${
+                          msg.isUser
+                            ? styles.timeTextRight
+                            : styles.timeTextLeft
+                        }`}
+                      >
+                        {msg.time}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           ))}
-
-          {uploading && (
-            <div className={styles.uploadingWrapper}>
-              <div className={styles.uploadingBubble}>
-                <div className={styles.uploadingText}>Uploading...</div>
-              </div>
-            </div>
-          )}
 
           {popup.visible && (
             <div
@@ -409,29 +411,25 @@ const ChatDetailScreen: React.FC = () => {
           >
             <div className={styles.inputWrapper}>
               <div className={styles.iconGroup}>
-                <Languages className={styles.inputIcon} />
-                <button
-                  onClick={handleCameraCapture}
-                  disabled={uploading}
-                  className={styles.iconButton}
-                >
-                  <Camera className={styles.inputIcon} />
-                </button>
-
-                <button
-                  onClick={handleImageUpload}
-                  className={styles.iconButton}
-                >
-                  <Image className={styles.inputIcon} />
-                </button>
-                <input className={styles.hiddenInput} />
+                <div className={styles.iconCursor}>
+                  <TranslationIcon />
+                </div>
+                <div className={styles.iconCursor}>
+                  <CameraImageIcon />
+                </div>
+                <div className={styles.iconCursor}>
+                  <GalleryImageIcon />
+                </div>
               </div>
 
               <div className={styles.inputBox}>
                 <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   className={styles.textarea}
                   placeholder="Aa"
                   rows={1}
+                  style={{ fontSize: "16px" }} // Prevent iOS zoom
                 />
                 <button
                   onClick={() => setShowTemplates(!showTemplates)}
@@ -442,7 +440,7 @@ const ChatDetailScreen: React.FC = () => {
               </div>
 
               <button onClick={handleSendMessage} className={styles.sendButton}>
-                <LucideSend className={styles.sendIcon} />
+                <SendIcon />
               </button>
             </div>
           </div>
