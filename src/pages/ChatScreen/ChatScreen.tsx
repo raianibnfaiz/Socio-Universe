@@ -1,15 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  ChevronLeft,
-  Edit3,
-  Menu,
-  Camera,
-  Image,
-  Languages,
-  Clock,
-  LucideSend,
-  CameraIcon,
-} from "lucide-react";
+import { Clock } from "lucide-react";
 import user1 from "../../assets/images/user1.png";
 import user2 from "../../assets/images/user2.png";
 import user4 from "../../assets/images/user4.png";
@@ -35,12 +25,19 @@ interface Message {
   isUser?: boolean;
 }
 
+interface Member {
+  name: string;
+  avatar: string;
+  subtitle?: string;
+}
+
 const ChatDetailScreen: React.FC = () => {
   const [message, setMessage] = useState("");
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("tempA");
   const [popup, setPopup] = useState({ visible: false, top: 0, left: 0 });
   const [showMenuDropdown, setShowMenuDropdown] = useState(false);
+  const [showMemberPopup, setShowMemberPopup] = useState(false);
   const [chatMessages, setChatMessages] = useState<Message[]>([
     {
       id: 1,
@@ -96,6 +93,21 @@ const ChatDetailScreen: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  const members: Member[] = [
+    {
+      name: "Naoto Ishigaki",
+      avatar: user1,
+      subtitle:
+        "10月5日、工場内で消毒が入ります。皆さん、注意して準備してください。",
+    },
+    { name: "Nguyễn Minh Quán (VN)", avatar: user2 },
+    { name: "Mamiko Hayashi (VN)", avatar: user4 },
+    { name: "Yuichi Kanzaki", avatar: user1 },
+    { name: "Takashi Miyashita", avatar: user4 },
+    { name: "Keiko Tokunaga", avatar: user1 },
+    { name: "Hoàng Thị Trang", avatar: user2 },
+  ];
 
   const templates: {
     [key: string]: { vietnamese: string; japanese: string }[];
@@ -180,6 +192,10 @@ const ChatDetailScreen: React.FC = () => {
     setShowMenuDropdown(!showMenuDropdown);
   };
 
+  const handleBackClick = () => {
+    setShowMemberPopup(true);
+  };
+
   const handleUserMessageClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const containerRect = chatContainerRef.current?.getBoundingClientRect();
@@ -232,139 +248,27 @@ const ChatDetailScreen: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.iconCursor}>
-          <BackIcon />
-        </div>
-
-        <div className={styles.headerTitle}>
-          <span className={styles.titleText}>トークルーム名（7）</span>
-          <div className={styles.iconCursor}>
-            <EditIcon />
+    <>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <div className={styles.iconCursor} onClick={handleBackClick}>
+            <BackIcon />
           </div>
-        </div>
-        <div onClick={handleMenuClick} className={styles.iconCursor}>
-          <MenuIcon />
-        </div>
 
-        {showMenuDropdown && (
-          <div
-            className={styles.popup}
-            style={{ top: 50, left: "auto", right: 3, bottom: "auto" }}
-          >
-            <div className={styles.popupItem}>
-              メッセージを見た人 <br /> Người xem
-            </div>
-            <div className={`${styles.popupItem} ${styles.popupItemDisabled}`}>
-              送信を取り消す <br /> Thu hồi
-            </div>
-            <div className={styles.popupItem}>
-              定型文へ追加 <br /> Thêm mẫu
-            </div>
-            <div className={`${styles.popupItem} ${styles.popupItemLast}`}>
-              復習用に登録 <br /> Lưu ôn tập
+          <div className={styles.headerTitle}>
+            <span className={styles.titleText}>トークルーム名（7）</span>
+            <div className={styles.iconCursor}>
+              <EditIcon />
             </div>
           </div>
-        )}
-      </div>
+          <div onClick={handleMenuClick} className={styles.iconCursor}>
+            <MenuIcon />
+          </div>
 
-      <div className={styles.dateSeparator}>
-        <span className={styles.dateText}>今日</span>
-      </div>
-
-      <div className={styles.mainContent}>
-        <div
-          ref={chatContainerRef}
-          className={styles.chatContainer}
-          onClick={handleChatAreaClick}
-        >
-          {chatMessages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`${styles.messageWrapper} ${
-                msg.isUser ? styles.messageWrapperUser : ""
-              }`}
-            >
-              <div
-                className={
-                  msg.isUser
-                    ? styles.userMessageContainer
-                    : styles.otherMessageContainer
-                }
-              >
-                {!msg.isUser && (
-                  <div className={styles.avatar}>
-                    {msg.avatar ? (
-                      <img
-                        src={msg.avatar}
-                        alt={msg.sender}
-                        className={styles.avatarImage}
-                      />
-                    ) : (
-                      <span>👤</span>
-                    )}
-                  </div>
-                )}
-
-                <div className={msg.isUser ? "" : styles.messageContent}>
-                  {!msg.isUser && (
-                    <div className={styles.senderName}>{msg.sender}</div>
-                  )}
-
-                  <div className={styles.messageRow}>
-                    <div
-                      onClick={msg.isUser ? handleUserMessageClick : undefined}
-                      className={`${styles.messageBubble} ${
-                        msg.isUser ? styles.userBubble : styles.otherBubble
-                      }`}
-                    >
-                      {msg.content.image ? (
-                        <img
-                          src={msg.content.image}
-                          alt="Uploaded"
-                          className={styles.messageImage}
-                        />
-                      ) : (
-                        <>
-                          {msg.content.japanese && (
-                            <div className={styles.japaneseText}>
-                              {msg.content.japanese}
-                            </div>
-                          )}
-                          {msg.content.vietnamese && (
-                            <div className={styles.vietnameseText}>
-                              {msg.content.vietnamese}
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-
-                    <div className={styles.timeContainer}>
-                      {msg.avatar === null && (
-                        <div className={styles.readStatus}>既読 6</div>
-                      )}
-                      <div
-                        className={`${styles.timeText} ${
-                          msg.isUser
-                            ? styles.timeTextRight
-                            : styles.timeTextLeft
-                        }`}
-                      >
-                        {msg.time}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {popup.visible && (
+          {showMenuDropdown && (
             <div
               className={styles.popup}
-              style={{ top: 355, bottom: "auto", right: 190, left: "auto" }}
+              style={{ top: 50, left: "auto", right: 3, bottom: "auto" }}
             >
               <div className={styles.popupItem}>
                 メッセージを見た人 <br /> Người xem
@@ -384,109 +288,256 @@ const ChatDetailScreen: React.FC = () => {
           )}
         </div>
 
-        <div className={styles.inputSection}>
-          {selectedTemplateItem && (
-            <div className={styles.extensionContainer}>
-              <div className={styles.extensionText}>
-                <div className={styles.extensionVietnamese}>
-                  {selectedTemplateItem.vietnamese}
-                </div>
-                {/* <div className={styles.extensionJapanese}>
-                  {selectedTemplateItem.japanese}
-                </div> */}
-              </div>
-              <button
-                className={styles.extensionCross}
-                onClick={closeExtension}
-              >
-                ×
-              </button>
-            </div>
-          )}
+        <div className={styles.dateSeparator}>
+          <span className={styles.dateText}>今日</span>
+        </div>
 
+        <div className={styles.mainContent}>
           <div
-            className={`${styles.inputContainer} ${
-              selectedTemplateItem ? styles.inputContainerAttached : ""
-            }`}
+            ref={chatContainerRef}
+            className={styles.chatContainer}
+            onClick={handleChatAreaClick}
           >
-            <div className={styles.inputWrapper}>
-              <div className={styles.iconGroup}>
-                <div className={styles.iconCursor}>
-                  <TranslationIcon />
-                </div>
-                <div className={styles.iconCursor}>
-                  <CameraImageIcon />
-                </div>
-                <div className={styles.iconCursor}>
-                  <GalleryImageIcon />
-                </div>
-              </div>
-
-              <div className={styles.inputBox}>
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className={styles.textarea}
-                  placeholder="Aa"
-                  rows={1}
-                  style={{ fontSize: "16px" }} // Prevent iOS zoom
-                />
-                <button
-                  onClick={() => setShowTemplates(!showTemplates)}
-                  className={styles.templateToggle}
+            {chatMessages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`${styles.messageWrapper} ${
+                  msg.isUser ? styles.messageWrapperUser : ""
+                }`}
+              >
+                <div
+                  className={
+                    msg.isUser
+                      ? styles.userMessageContainer
+                      : styles.otherMessageContainer
+                  }
                 >
-                  A
-                </button>
-              </div>
+                  {!msg.isUser && (
+                    <div className={styles.avatar}>
+                      {msg.avatar ? (
+                        <img
+                          src={msg.avatar}
+                          alt={msg.sender}
+                          className={styles.avatarImage}
+                        />
+                      ) : (
+                        <span>👤</span>
+                      )}
+                    </div>
+                  )}
 
-              <button onClick={handleSendMessage} className={styles.sendButton}>
-                <SendIcon />
-              </button>
-            </div>
+                  <div className={msg.isUser ? "" : styles.messageContent}>
+                    {!msg.isUser && (
+                      <div className={styles.senderName}>{msg.sender}</div>
+                    )}
+
+                    <div className={styles.messageRow}>
+                      <div
+                        onClick={
+                          msg.isUser ? handleUserMessageClick : undefined
+                        }
+                        className={`${styles.messageBubble} ${
+                          msg.isUser ? styles.userBubble : styles.otherBubble
+                        }`}
+                      >
+                        {msg.content.image ? (
+                          <img
+                            src={msg.content.image}
+                            alt="Uploaded"
+                            className={styles.messageImage}
+                          />
+                        ) : (
+                          <>
+                            {msg.content.japanese && (
+                              <div className={styles.japaneseText}>
+                                {msg.content.japanese}
+                              </div>
+                            )}
+                            {msg.content.vietnamese && (
+                              <div className={styles.vietnameseText}>
+                                {msg.content.vietnamese}
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+
+                      <div className={styles.timeContainer}>
+                        {msg.avatar === null && (
+                          <div className={styles.readStatus}>既読 6</div>
+                        )}
+                        <div
+                          className={`${styles.timeText} ${
+                            msg.isUser
+                              ? styles.timeTextRight
+                              : styles.timeTextLeft
+                          }`}
+                        >
+                          {msg.time}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {popup.visible && (
+              <div
+                className={styles.popup}
+                style={{ top: 355, bottom: "auto", right: 190, left: "auto" }}
+              >
+                <div className={styles.popupItem}>
+                  メッセージを見た人 <br /> Người xem
+                </div>
+                <div
+                  className={`${styles.popupItem} ${styles.popupItemDisabled}`}
+                >
+                  送信を取り消す <br /> Thu hồi
+                </div>
+                <div className={styles.popupItem}>
+                  定型文へ追加 <br /> Thêm mẫu
+                </div>
+                <div className={`${styles.popupItem} ${styles.popupItemLast}`}>
+                  復習用に登録 <br /> Lưu ôn tập
+                </div>
+              </div>
+            )}
           </div>
 
-          {showTemplates && (
-            <div className={styles.templateContainer}>
-              <div className={styles.templateTabs}>
-                <Clock className={styles.clockIcon} />
-                <div className={styles.tabsWrapper}>
-                  {templateTabs.map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => handleTabSelect(tab)}
-                      className={`${styles.tabButton} ${
-                        selectedTemplate === tab ? styles.tabButtonActive : ""
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+          <div className={styles.inputSection}>
+            {selectedTemplateItem && (
+              <div className={styles.extensionContainer}>
+                <div className={styles.extensionText}>
+                  <div className={styles.extensionVietnamese}>
+                    {selectedTemplateItem.vietnamese}
+                  </div>
                 </div>
+                <button
+                  className={styles.extensionCross}
+                  onClick={closeExtension}
+                >
+                  ×
+                </button>
               </div>
+            )}
 
-              <div className={styles.templateGrid}>
-                {templates[selectedTemplate]
-                  ?.slice(0, 8)
-                  .map((template, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleTemplateSelect(template)}
-                      className={styles.templateButton}
-                    >
-                      <div className={styles.templateVietnamese}>
-                        {template.vietnamese}
-                      </div>
-                      <div className={styles.templateJapanese}>
-                        {template.japanese}
-                      </div>
-                    </button>
-                  ))}
+            <div
+              className={`${styles.inputContainer} ${
+                selectedTemplateItem ? styles.inputContainerAttached : ""
+              }`}
+            >
+              <div className={styles.inputWrapper}>
+                <div className={styles.iconGroup}>
+                  <div className={styles.iconCursor}>
+                    <TranslationIcon />
+                  </div>
+                  <div className={styles.iconCursor}>
+                    <CameraImageIcon />
+                  </div>
+                  <div className={styles.iconCursor}>
+                    <GalleryImageIcon />
+                  </div>
+                </div>
+
+                <div className={styles.inputBox}>
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className={styles.textarea}
+                    placeholder="Aa"
+                    rows={1}
+                    style={{ fontSize: "16px" }}
+                  />
+                  <button
+                    onClick={() => setShowTemplates(!showTemplates)}
+                    className={styles.templateToggle}
+                  >
+                    A
+                  </button>
+                </div>
+
+                <button
+                  onClick={handleSendMessage}
+                  className={styles.sendButton}
+                >
+                  <SendIcon />
+                </button>
               </div>
             </div>
-          )}
+
+            {showTemplates && (
+              <div className={styles.templateContainer}>
+                <div className={styles.templateTabs}>
+                  <Clock className={styles.clockIcon} />
+                  <div className={styles.tabsWrapper}>
+                    {templateTabs.map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => handleTabSelect(tab)}
+                        className={`${styles.tabButton} ${
+                          selectedTemplate === tab ? styles.tabButtonActive : ""
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.templateGrid}>
+                  {templates[selectedTemplate]
+                    ?.slice(0, 8)
+                    .map((template, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleTemplateSelect(template)}
+                        className={styles.templateButton}
+                      >
+                        <div className={styles.templateVietnamese}>
+                          {template.vietnamese}
+                        </div>
+                        <div className={styles.templateJapanese}>
+                          {template.japanese}
+                        </div>
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {showMemberPopup && (
+        <div
+          className={styles.memberOverlay}
+          onClick={() => setShowMemberPopup(false)}
+        >
+          <div
+            className={styles.memberPopup}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.memberList}>
+              {members.map((member, index) => (
+                <div key={index} className={styles.memberItem}>
+                  <div className={styles.memberAvatar}>
+                    <img
+                      src={member.avatar}
+                      alt={member.name}
+                      className={styles.memberAvatarImage}
+                    />
+                  </div>
+                  <div className={styles.memberInfo}>
+                    <div className={styles.memberName}>{member.name}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

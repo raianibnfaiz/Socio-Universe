@@ -93,6 +93,7 @@
   -ms-overflow-style: none; /* IE and Edge */
   background-color: #f7f7f7;
   min-height: 0;
+  overscroll-behavior-y: none;
 }
 
 .chatContainer::-webkit-scrollbar {
@@ -572,6 +573,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-focus-ring-color: transparent !important;
 }
 
 /* Add to your CSS module */
@@ -619,11 +624,36 @@
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .container {
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+  }
+
+  @media screen and (max-width: 768px) {
+    .container {
+      height: -webkit-fill-available;
+      min-height: -webkit-fill-available;
+    }
+  }
+}
+@media screen and (max-width: 768px) {
+  html,
+  body {
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+}
 /* Mobile viewport fixes */
 @media screen and (max-width: 768px) {
   .container {
     height: 100vh;
     height: 100dvh;
+    height: stretch;
     max-width: 100vw;
     left: 0;
     transform: none;
@@ -646,4 +676,84 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
   }
+}
+
+.memberOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: brightness(0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.memberPopup {
+  background: white;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 350px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.memberList {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.memberList::-webkit-scrollbar {
+  display: none;
+}
+
+.memberItem {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.memberItem:last-child {
+  border-bottom: none;
+}
+
+.memberAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.memberAvatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.memberInfo {
+  flex: 1;
+}
+
+.memberName {
+  font-size: 0.875rem;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.memberSubtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.3;
+  word-break: break-word;
 }
