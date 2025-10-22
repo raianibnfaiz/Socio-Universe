@@ -14,6 +14,8 @@ import { EditIcon } from "../../icon/editIcon";
 import { MenuDropdown } from "./MenuDropdown/MenuDropdown";
 import { UserMessageClickDropdown } from "./UserMessageClickDropdown/UserMessageClickDropdown";
 import { MemberPopup } from "./MemberPopup/MemberPopup";
+import { AButtonIcon } from "../../icon/aButtonIcon";
+import { CloseIcon } from "../../icon/closeIcon";
 
 interface Message {
   id: number;
@@ -99,15 +101,10 @@ const ChatDetailScreen: React.FC = () => {
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const members: Member[] = [
-    {
-      name: "Naoto Ishigaki",
-      avatar: user1,
-      subtitle:
-        "10月5日、工場内で消毒が入ります。皆さん、注意して準備してください。",
-    },
-    { name: "Nguyễn Minh Quán (VN)", avatar: user2 },
+    { name: "Nguyễn Minh Quân（自分)", avatar: user2 },
     { name: "Mamiko Hayashi (VN)", avatar: user4 },
     { name: "Yuichi Kanzaki", avatar: user1 },
+    { name: "Naoto Ishigaki", avatar: user2 },
     { name: "Takashi Miyashita", avatar: user4 },
     { name: "Keiko Tokunaga", avatar: user1 },
     { name: "Hoàng Thị Trang", avatar: user2 },
@@ -369,7 +366,6 @@ const ChatDetailScreen: React.FC = () => {
               position={{ top: messagePopup.top, left: messagePopup.left }}
             />
           </div>
-
           <div className={styles.inputSection}>
             {selectedTemplateItem && (
               <div className={styles.extensionContainer}>
@@ -378,12 +374,15 @@ const ChatDetailScreen: React.FC = () => {
                     {selectedTemplateItem.vietnamese}
                   </div>
                 </div>
-                <button
+                {/* <button
                   className={styles.extensionCross}
                   onClick={closeExtension}
                 >
                   ×
-                </button>
+                </button> */}
+                <div onClick={closeExtension} className={styles.extensionCross}>
+                  <CloseIcon />
+                </div>
               </div>
             )}
 
@@ -414,14 +413,13 @@ const ChatDetailScreen: React.FC = () => {
                     rows={1}
                     style={{ fontSize: "16px" }}
                   />
-                  <button
+                  <div
                     onClick={() => setShowTemplates(!showTemplates)}
                     className={styles.templateToggle}
                   >
-                    A
-                  </button>
+                    <AButtonIcon />
+                  </div>
                 </div>
-
                 <button
                   onClick={handleSendMessage}
                   className={styles.sendButton}
@@ -478,34 +476,6 @@ const ChatDetailScreen: React.FC = () => {
         onClose={() => setShowMemberPopup(false)}
         members={members}
       />
-      {/* {showMemberPopup && (
-        <div
-          className={styles.memberOverlay}
-          onClick={() => setShowMemberPopup(false)}
-        >
-          <div
-            className={styles.memberPopup}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={styles.memberList}>
-              {members.map((member, index) => (
-                <div key={index} className={styles.memberItem}>
-                  <div className={styles.memberAvatar}>
-                    <img
-                      src={member.avatar}
-                      alt={member.name}
-                      className={styles.memberAvatarImage}
-                    />
-                  </div>
-                  <div className={styles.memberInfo}>
-                    <div className={styles.memberName}>{member.name}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )} */}
     </>
   );
 };
