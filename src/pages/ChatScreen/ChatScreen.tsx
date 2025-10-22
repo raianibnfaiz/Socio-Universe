@@ -11,6 +11,9 @@ import { GalleryImageIcon } from "../../icon/galleryImageicon";
 import { BackIcon } from "../../icon/backIcon";
 import { MenuIcon } from "../../icon/menuIcon";
 import { EditIcon } from "../../icon/editIcon";
+import { MenuDropdown } from "./MenuDropdown/MenuDropdown";
+import { UserMessageClickDropdown } from "./UserMessageClickDropdown/UserMessageClickDropdown";
+import { MemberPopup } from "./MemberPopup/MemberPopup";
 
 interface Message {
   id: number;
@@ -35,9 +38,13 @@ const ChatDetailScreen: React.FC = () => {
   const [message, setMessage] = useState("");
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("tempA");
-  const [popup, setPopup] = useState({ visible: false, top: 0, left: 0 });
   const [showMenuDropdown, setShowMenuDropdown] = useState(false);
   const [showMemberPopup, setShowMemberPopup] = useState(false);
+  const [messagePopup, setMessagePopup] = useState({
+    visible: false,
+    top: 0,
+    left: 0,
+  });
   const [chatMessages, setChatMessages] = useState<Message[]>([
     {
       id: 1,
@@ -91,9 +98,6 @@ const ChatDetailScreen: React.FC = () => {
   } | null>(null);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
-
   const members: Member[] = [
     {
       name: "Naoto Ishigaki",
@@ -178,11 +182,11 @@ const ChatDetailScreen: React.FC = () => {
     if (showTemplates) {
       setShowTemplates(false);
     }
-    if (popup.visible) {
-      setPopup({ visible: false, top: 0, left: 0 });
+    if (messagePopup.visible) {
+      // Updated from popup to messagePopup
+      setMessagePopup({ visible: false, top: 0, left: 0 });
     }
     if (showMenuDropdown) {
-      // Add this
       setShowMenuDropdown(false);
     }
   };
@@ -197,24 +201,17 @@ const ChatDetailScreen: React.FC = () => {
   };
 
   const handleUserMessageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     const rect = e.currentTarget.getBoundingClientRect();
     const containerRect = chatContainerRef.current?.getBoundingClientRect();
 
     if (containerRect) {
-      setPopup({
+      setMessagePopup({
         visible: true,
         top: rect.top - containerRect.top + rect.height / 2,
         left: rect.left - containerRect.left - 200,
       });
     }
-  };
-
-  const handleImageUpload = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleCameraCapture = () => {
-    cameraInputRef.current?.click();
   };
 
   const getCurrentTime = () => {
@@ -264,28 +261,11 @@ const ChatDetailScreen: React.FC = () => {
           <div onClick={handleMenuClick} className={styles.iconCursor}>
             <MenuIcon />
           </div>
-
-          {showMenuDropdown && (
-            <div
-              className={styles.popup}
-              style={{ top: 50, left: "auto", right: 3, bottom: "auto" }}
-            >
-              <div className={styles.popupItem}>
-                メッセージを見た人 <br /> Người xem
-              </div>
-              <div
-                className={`${styles.popupItem} ${styles.popupItemDisabled}`}
-              >
-                送信を取り消す <br /> Thu hồi
-              </div>
-              <div className={styles.popupItem}>
-                定型文へ追加 <br /> Thêm mẫu
-              </div>
-              <div className={`${styles.popupItem} ${styles.popupItemLast}`}>
-                復習用に登録 <br /> Lưu ôn tập
-              </div>
-            </div>
-          )}
+          <MenuDropdown
+            isVisible={showMenuDropdown}
+            onClose={() => setShowMenuDropdown(false)}
+            position={{ top: 50, right: 3 }}
+          />
         </div>
 
         <div className={styles.dateSeparator}>
@@ -381,28 +361,13 @@ const ChatDetailScreen: React.FC = () => {
                 </div>
               </div>
             ))}
-
-            {popup.visible && (
-              <div
-                className={styles.popup}
-                style={{ top: 355, bottom: "auto", right: 190, left: "auto" }}
-              >
-                <div className={styles.popupItem}>
-                  メッセージを見た人 <br /> Người xem
-                </div>
-                <div
-                  className={`${styles.popupItem} ${styles.popupItemDisabled}`}
-                >
-                  送信を取り消す <br /> Thu hồi
-                </div>
-                <div className={styles.popupItem}>
-                  定型文へ追加 <br /> Thêm mẫu
-                </div>
-                <div className={`${styles.popupItem} ${styles.popupItemLast}`}>
-                  復習用に登録 <br /> Lưu ôn tập
-                </div>
-              </div>
-            )}
+            <UserMessageClickDropdown
+              isVisible={messagePopup.visible}
+              onClose={() =>
+                setMessagePopup({ visible: false, top: 0, left: 0 })
+              }
+              position={{ top: messagePopup.top, left: messagePopup.left }}
+            />
           </div>
 
           <div className={styles.inputSection}>
@@ -508,8 +473,12 @@ const ChatDetailScreen: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {showMemberPopup && (
+      <MemberPopup
+        isVisible={showMemberPopup}
+        onClose={() => setShowMemberPopup(false)}
+        members={members}
+      />
+      {/* {showMemberPopup && (
         <div
           className={styles.memberOverlay}
           onClick={() => setShowMemberPopup(false)}
@@ -536,7 +505,7 @@ const ChatDetailScreen: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 };
